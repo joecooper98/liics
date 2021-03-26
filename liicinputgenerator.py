@@ -106,7 +106,7 @@ if copydata.index(['Variables:']) != len(init_geom):
 
 endfile = open("endfile","w")
 
-endfile.write("\n\n\n\n0  1\n")
+endfile.write("#necessary\n\nnecessary\n\n0  1\n")
 for i in range(copydata.index(['Variables:'])):
     for j in range(len(copydata[i])):
         if j < len(copydata[i])-1:
