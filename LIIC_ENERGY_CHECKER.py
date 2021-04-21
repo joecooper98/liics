@@ -37,6 +37,6 @@ outfile=open("energyout.txt",'a')
 
 e = mf.kernel()
 
-outfile.write(str(e))
+outfile.write(str(e)+"\n")
 
 
