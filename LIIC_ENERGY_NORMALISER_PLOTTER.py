@@ -1,5 +1,11 @@
 #!/usr/bin/python
 
+#################################################################
+# This code takes the output of the LIIC_ENERGY_CALCULATOR.py   #
+# script and then runs a very basic normalisation and plotting  #
+# script to visualise the results                               #
+#################################################################
+
 import numpy as np
 import matplotlib.pyplot as plt
 
