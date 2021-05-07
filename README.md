@@ -8,11 +8,10 @@ By creating two of these files, we can linearly interpolate between the two geom
 
 The files MUST have the same ordering of atoms.
 
-Before we linearly interpolate, we must first check that the definitions of 
-the geometries are the same, using vimdiff for example.
+Therefore create one gzmat file, and then then run ./liicinputgenerator.py, which will lead you through the 
+generation of a gzmat file using the same definitions of internal coordinates for a different geometry.
 
-If not, then run ./liicinputgenerator.py, which will lead you through the 
-generation of a gzmat file using the same definitions of internal coordinates.
+This file will be called endfile, because I have't yet updated my code haha.
 
 Then run ./liic.py, which should create a list of output files in .xyz and .gzmat format.
 
