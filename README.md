@@ -28,9 +28,10 @@ and check that the pathway is chemically viable (i.e. no nuclei passing through 
 If not, then try a different zmat form. This can be created manually, and then using 
 ./liicinputgenerator.py twice, we can create two .gzmat files to use.
 
-
 A recent update has fixed a phase issue with dihedrals, but this can cause 
 some issues - visualise the results and check the interpolation looks 
-correct.
+correct. Sometimes you can see a large spinning of one of the dihedral angles. A quick way to check this is
+to see if the dihedral angles in the gzmat files (i.e. the dN values) for the two files are close to eachother
+(
 
-
+The 2 LIIC_ENERGY python scripts just run a simple set of HF calculations using pyscf in order to quickly check the pathway for viability.
