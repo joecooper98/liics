@@ -1,13 +1,26 @@
-#!/usr/bin/env python3
+#/usr/bin/env python3
 
 import numpy as np
 import sys
 
 # Assumes most common isotope masses
 
-MWBOOL = True # Do you want mass weighted coords or not?
+print("What level of mass weighting do you want? (0 = not mass-weighted, 1 = weighted by m^(1/2), 2 = weighted by m (default))")
 
-print("The units of the output will be X amu^1/2, where X is the unit of the input .xyz file")
+a = input()
+
+MWBOOL = True # Do you want mass weighted coords or not?
+SQBOOL = False
+
+if a == '0':
+    MWBOOL = False
+    print("The units of the output will be X, where X is the unit of the input .xyz file")
+elif a == '1':
+    MWBOOL = True
+    SQBOOL = True
+    print("The units of the output will be X m^(1/2), where X is the unit of the input .xyz file")
+else:
+    print("The units of the output will be X m, where X is the unit of the input .xyz file")
 
 U_TO_AMU = 1.            # conversion from g/mol to amu
 
@@ -147,8 +160,12 @@ for i in sys.argv[1:]:
     mol = np.genfromtxt(i, skip_header=2, usecols=(1,2,3))
     diffmat = (mol - mol0)**2
     if MWBOOL:
-        for j in range(np.shape(mol)[0]):
-            diffmat[j,:] *= massindex[j]
+        if SQBOOL:
+            for j in range(np.shape(mol)[0]):
+                diffmat[j,:] *= massindex[j]
+        else:
+            for j in range(np.shape(mol)[0]):
+                diffmat[j,:] *= massindex[j]**2
     print(np.sqrt(np.sum(diffmat)))
 
 
