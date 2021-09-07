@@ -76,4 +76,4 @@ for j in range(no_of_points):
     os.system("obabel -igzmat "+name+" -oxyz > "+name+".xyz") # convert files back into .xyz files
 
 os.system("obabel -igzmat "+startfile+" -oxyz > "+pathwayname+"_0.xyz") # make start file an .xyz
-os.system("obabel -igzmat "+startfile+" -oxyz > "+pathwayname+"_"+str(no_of_points+1)+".xyz") # make start file an .xyz
+os.system("obabel -igzmat "+endfile+" -oxyz > "+pathwayname+"_"+str(no_of_points+1)+".xyz") # make start file an .xyz
