@@ -50,7 +50,7 @@ for i in range(no_of_points):
     geoms.append([]) # add a blank list to the list
     for j in range(end_geom.index('Variables:')+1,len(end_geom)): # only iterate over the variable section of the file
         difference=float(end_geom[j].split()[-1])-float(start_geom[j].split()[-1]) # find the difference between the start and end points variables
-        increment = difference / (no_of_points+1) # create the increment, which is simply the difference divided by the number of points
+        increment = difference / no_of_points # create the increment, which is simply the difference divided by the number of points
         ithgeom = []
         ithgeom.append(float(start_geom[j].split()[-1])+increment*(i+1)) # add the increment onto the variables, and add the variables to the blank list at its index inside the list of geometries
         geoms[i].append(ithgeom)
@@ -71,4 +71,4 @@ for j in range(no_of_points):
     os.system("obabel -igzmat "+name+" -oxyz > "+name+".xyz") # convert files back into .xyz files
 
 os.system("obabel -igzmat "+startfile+" -oxyz > "+pathwayname+"_0.xyz") # make start file an .xyz
-os.system("obabel -igzmat "+startfile+" -oxyz > "+pathwayname+"_"+str(no_of_points+1)+".xyz") # make start file an .xyz
+    
