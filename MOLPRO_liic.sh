@@ -8,8 +8,6 @@
 
 cwd=`pwd`
 
-WFU=/data/scratch/joe/wfu
-
 input_directory="${cwd}/input"
 
 input_file=molpro.inp
@@ -20,30 +18,23 @@ pathway_directory="${cwd}/liic"
 
 pathway_name=pathway
 
-wfu_name=liic
-
-no_of_points=`ls ${pathway_directory} | wc -l`
+wfu_name=liic1.wfu
 
 mkdir $cwd/CALCULATIONS
 
-wfu_rolling="${wfu_name}_rolling.wfu"
+wfu_rolling="rolling_${wfu_name}"
 
-cp ${input_directory}/${input_wfu} ${WFU}/${wfu_rolling}
+cp ${input_directory}/${input_wfu} ${cwd}/${wfu_rolling}
 
-nopm1=`echo "$no_of_points -1" | bc`
-
-#for i in {0..15}
-for i in $(seq 0 $nopm1)
-#for i in $(seq $nopm1 -1 0) # for reverse
+for i in $(seq 64 -4 0)
 do
 	mkdir ${cwd}/CALCULATIONS/liic_$i
 	cd ${cwd}/CALCULATIONS/liic_$i
 	cp ${input_directory}/${input_file} molpro.inp
-	cp ${WFU}/${wfu_rolling} init$i.wfu
-	sed -i "s/FILELINETOCHANGE/FILE,2,$wfu_rolling/g" molpro.inp
+	cp ${cwd}/${wfu_rolling} ${wfu_name}
+	sed -i "/file/c\FILE,2,${wfu_name}" molpro.inp
 	geo_iter="${pathway_name}_$i.xyz"
-	cp ${pathway_directory}/${geo_iter} .
-	sed -i "s/GEOMETRYLINETOCHANGE/geometry = $geo_iter/g" molpro.inp
-	nohup molpro molpro.inp 
-	cp ${WFU}/${wfu_rolling} final$i.wfu
+	cp ${pathway_directory}/${geo_iter} geom
+	nohup molpro -W `pwd` -I `pwd` -d `pwd` molpro.inp 2> nohup.err
+	cp ${wfu_name} ${cwd}/${wfu_rolling}
 done
