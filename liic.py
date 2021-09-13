@@ -27,8 +27,8 @@ for line in end_file:
     end_geom.append(line)
 
 pathwayname = input("What do you want the pathway files to be called?\n") # the name of the intermediate files
-
-no_atoms = end_geom.index('Variables:') - 5 
+print(end_geom)
+no_atoms =  end_geom.index("Variables:") - end_geom.index('0  1')-1
 print(no_atoms)
 
 this_is_crap_but_it_works = [] # retrieve all variable names by splitting the lines. The bits after the line with "Variables:" are the variable names
@@ -52,6 +52,7 @@ geoms = [] # init blank list for all the variables. will be an array of arrays f
 for i in range(no_of_points):
     geoms.append([]) # add a blank list to the list
     for j in range(end_geom.index('Variables:')+1,end_geom.index('Variables:')+1+3*no_atoms-6): # only iterate over the variable section of the file
+        print(j)
         print(end_geom[j].split()[1])
         difference=float(end_geom[j].split()[-1])-float(start_geom[j].split()[-1]) # find the difference between the start and end points variables
         increment = difference / (no_of_points+1) # create the increment, which is simply the difference divided by the number of points
@@ -67,9 +68,8 @@ for j in range(no_of_points):
         if i <= start_geom.index("Variables:"): # copy start geom file up to the word Variables
             f.write(start_geom[i])
             f.write("\n")
-        elif i < len(start_geom): # write the variable name, then a space, then the variable (without []), and then a new line.
+        elif i < len(start_geom)-1: # write the variable name, then a space, then the variable (without []), and then a new line.
             f.write(this_is_crap_but_it_works[i]+" "+str(geoms[j][i-start_geom.index("Variables:")-1]).strip("[]")+"\n")
-#            print(i)
         else:
             f.write("\n") # end with new line
     f.close() #close file
@@ -77,3 +77,4 @@ for j in range(no_of_points):
 
 os.system("obabel -igzmat "+startfile+" -oxyz > "+pathwayname+"_0.xyz") # make start file an .xyz
 os.system("obabel -igzmat "+endfile+" -oxyz > "+pathwayname+"_"+str(no_of_points+1)+".xyz") # make start file an .xyz
+

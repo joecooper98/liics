@@ -70,43 +70,40 @@ def dihedral(v1,v2,v3,v4):
 
 filename = input("What .xyz file is to be changed?\n")
 # filename="QC.xyz"
-input_data = open(filename,"r")
+init_geom = np.genfromtxt(filename, skip_header=2, usecols=[1,2,3])
 
-
-
-init_geom = []
-for line in input_data:
-    sline=line.strip('\n')
-    chunks=re.split(' +',sline)
-    del chunks[0]
-    for i in range(len(chunks)):
-        chunks[i]=float(chunks[i].strip("'"))
-    init_geom.append(chunks)
-    
-    
-del init_geom[0:2]
 
 copyfilename = input("Which file would you like to be copied? GZMAT form, can be handmade, needs 5 blank lines at top if so\n")
 # copyfilename="NB.gzmat"
 copy_file = open(copyfilename,"r")
 
+endfile = open("final.gzmat","w")
+
 copydata=[]
+copybool=True
 for line in copy_file:
     sline=line.strip('\n')
     chunks=re.split(' +',sline)
+    if copybool:
+        endfile.write(line)
+    if chunks == ['0','1']:
+        copybool=False
     copydata.append(chunks)
-    
-del copydata[0:5]
 
-if copydata.index(['Variables:']) != len(init_geom):
+multindex=copydata.index(['0', '1'])+1
+
+print(copydata)
+
+del copydata[0:multindex]
+
+nat=np.shape(init_geom)[0]
+ncoord=nat*3-6
+
+print(copydata)
+if copydata.index(['Variables:']) != nat:
     print("Different sized files!")
     sys.exit()
 
-
-
-endfile = open("endfile","w")
-
-endfile.write("#necessary\n\nnecessary\n\n0  1\n")
 for i in range(copydata.index(['Variables:'])):
     for j in range(len(copydata[i])):
         if j < len(copydata[i])-1:
@@ -117,7 +114,7 @@ for i in range(copydata.index(['Variables:'])):
     endfile.write("\n")
 endfile.write('Variables:\n')
 
-for i in range(len(init_geom)-1):
+for i in range(nat-1):
     if i == 0:
         endfile.write("r2= ")
         endfile.write(str(round(distance(init_geom[i+1],init_geom[int(copydata[i+1][1])-1]),4)))
@@ -140,6 +137,7 @@ for i in range(len(init_geom)-1):
         endfile.write(str(round(dihedral(init_geom[i+1],init_geom[int(copydata[i+1][1])-1],init_geom[int(copydata[i+1][3])-1],init_geom[int(copydata[i+1][5])-1]),4)))
         endfile.write("\n")
 
+endfile.write("\n")
 
 
 
