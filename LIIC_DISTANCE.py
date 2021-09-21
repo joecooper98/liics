@@ -5,22 +5,10 @@ import sys
 
 # Assumes most common isotope masses
 
-print("What level of mass weighting do you want? (0 = not mass-weighted, 1 = weighted by m^(1/2), 2 = weighted by m (default))")
+#What level of mass weighting do you want? (0 = not mass-weighted, 1 = weighted by m^(1/2), 2 = weighted by m (default))
 
-a = input()
 
-MWBOOL = True # Do you want mass weighted coords or not?
-SQBOOL = False
 
-if a == '0':
-    MWBOOL = False
-    print("The units of the output will be X, where X is the unit of the input .xyz file")
-elif a == '1':
-    MWBOOL = True
-    SQBOOL = True
-    print("The units of the output will be X m^(1/2), where X is the unit of the input .xyz file")
-else:
-    print("The units of the output will be X m, where X is the unit of the input .xyz file")
 
 U_TO_AMU = 1.            # conversion from g/mol to amu
 
@@ -148,15 +136,29 @@ MASSES = {'H' :   1.007825 * U_TO_AMU,
           'Og': 294. * U_TO_AMU
 }
 
-with open(sys.argv[1]) as f:
+with open(sys.argv[2]) as f:
     mol1=f.readlines()
 massindex = np.array([MASSES[mol1[x].split()[0]] for x in range(len(mol1)) if x > 1])
 
 f.close()
 
-mol0 = np.genfromtxt(sys.argv[1], skip_header=2, usecols=(1,2,3))
+a=int(sys.argv[1])
 
-for i in sys.argv[1:]:
+if a == 0:
+    MWBOOL = False
+    SQBOOL = False
+elif a == 1:
+    MWBOOL = True
+    SQBOOL = True
+else:
+    MWBOOL = True # Do you want mass weighted coords or not?
+    SQBOOL = False
+
+print(a)
+
+mol0 = np.genfromtxt(sys.argv[2], skip_header=2, usecols=(1,2,3))
+
+for i in sys.argv[2:]:
     mol = np.genfromtxt(i, skip_header=2, usecols=(1,2,3))
     diffmat = (mol - mol0)**2
     if MWBOOL:
