@@ -122,14 +122,16 @@ The input does generally have to be slightly altered to perform the calculations
 
 ### MOLPRO
 
-`input` should contain  - an input file, normally called `molpro.inp`
-                          - This should contain all the details for calculations to be performed, should have a `file` line, and a `geometry=geom` line
-                        - an input wavefunction with the name `start.wfu`
+`input` should contain  
+- an input file, normally called `molpro.inp`
+  - This should contain all the details for calculations to be performed, should have a `file` line, and a `geometry=geom` line
+- an input wavefunction with the name `start.wfu`
 
 ### MOLCAS
 
-`input` should contain  - an input file, normally called `molcas.input`
-                          - f
+`input` should contain  
+- an input file, normally called `molcas.input`
+  - for Kaufmann functions, you should use the `MOLCAS..` script, and define the ..
                         - an input wavefunction with the name `start.RasOrb`
 
 ### BAGEL
