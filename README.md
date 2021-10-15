@@ -95,6 +95,7 @@ the file `distances` will contain a list of distances. If one changes `0` to `1`
 
 The file name `distances` can be used in the plotting scripts `plot.py` and `plotcomp.py` later.
 
+----
 ## 2 - Calculation
 
 There are currently scripts to run *MOLPRO*, *BAGEL* and *MOLCAS* calculations. The scripts for *TURBOMOLE* also exist, but need some work.
@@ -122,25 +123,70 @@ The input does generally have to be slightly altered to perform the calculations
 
 ### MOLPRO
 
+Run using the script `MOLPRO_liic.sh`, and can be read using `MOLPRO_liic_
+
 `input` should contain  
-- an input file, normally called `molpro.inp`
-  - This should contain all the details for calculations to be performed, should have a `file` line, and a `geometry=geom` line
-- an input wavefunction with the name `start.wfu`
+- An input file, normally called `molpro.inp`
+  - This should contain all the details for calculations to be performed, should have a `file,2,liic.wfu` line, and a `geometry=geom` line
+  - This file will be the main input file, and will be altered to use the correct geometry and wavefunction
+  - The calculation will be performed locally, so all of the permanent files are in the calculation directory
+- An input wavefunction with the name `start.wfu`
+  - This should be a good initial wavefunction for the first geometry to be calculated.
+  - This will be copied and propagated across the LIIC. The intermediate file will be in the parent directory and called `rolling.wfu`
+- *Optional* a CASPT2/MRCI input file, normally called `pt2.inp`
+  - This should contain all the details for a CASPT2/MRCI calculation, and will load the wavefunction from the wavefunction of the CASSCF calculation
+
+#### PT2
+
+If one wants to perform CASPT2 after the LIIC is finished, one can use the `MOLPRO_LIIC_pt2.sh` script. This will copy a new file into the `CALCULATIONS/liic_X` trajectory, and then run a CASPT2 calculation from the wavefunction of the CASSCF calculation.
+
+This is generally preferable over performing CASPT2 in the CASSCF calculation, as only a converged CASSCF calculation is needed to propagate the wavefunctions, not a full CASPT2 one. This allows the 'trivial parallelisation' of the calculation with a simple altering of the script, or a downsampling of the LIIC by only performing a few calculations.
 
 ### MOLCAS
 
 `input` should contain  
 - an input file, normally called `molcas.input`
-  - for Kaufmann functions, you should use the `MOLCAS..` script, and define the ..
-                        - an input wavefunction with the name `start.RasOrb`
+  - The `RASSCF` section should have the `lumorb` keyword to load the old orbitals.
+  - If Kaufmann functions are not required, then one should define the geometry/basis in `GATEWAY`, defining the geometry from the file `geom`.
+  - for Kaufmann functions, you should use the `MOLCAS_liic_Kaufmann.sh` script, and define the basis set as seen in the example. This will perform an cation calculation using a file called `ion.input`, and centre the Kaufmann functions on a dummy atom `X` the centre of charge.
+- an input wavefunction with the name `start.RasOrb`
+  - This should be a good initial wavefunction for the start geometry
+- *Optional* a CASPT2 input fule, normally called `pt2.input` 
+  - This should contain all of the details for the `&CASPT2` module in `MOLCAS` - it will be concatenated onto the original input file.
+
+#### CASPT2
+
+Similar to the way one can do this in `MOLPRO`, one can perform a CASPT2 calculation after the CASSCF calculation. The main points are:
+
+- The file name should be `pt2.input` or similar
+- The script will run the calculations in a `liic_X/pt2` subdirectory, to ensure the wavefunctions are kept for analysis
+- The file will be concatenated with the initial calculation to rerun the CASSCF. This is slower than in MOLPRO or BAGEL, but I am unaware of any workaround. This shouldn't be a huge slowdown, as the wavefunction should be already converged (and will be loaded from the `molcas.RasOrb` file of the old calculation.
 
 ### BAGEL
 
-`input` should contain  - an input file, normally called `molcas.input`
-                        - an input wavefunction with the name `start.wfu`
+`input` should contain  
+- an input file, normally called `bagel.json`
+  - This should have the loading of the basis set, the `"angstrom" : true` keyphrase, and no geometry defined, just the word `pointer` (the script will look for this, and this will be fixed soon...)
+  - The file should load a reference file called `prev.ref.archive` (or similar, making sure to use the `"continue_geom" : false` keyphrase) and save to one called `cas.ref.archive`
+  - It is preferable to print the orbitals to a molden file for analysis of the wavefunction over the coordinate
+- an input wavefunction with the name `start.ref`
+  - This should be a good initial wavefunction for the start geometry
+- *Optional* a CASPT2 input fule, normally called `pt2.json` 
+  - This should load the wavefunction/geometries in `cas.ref.archive` - seem more details below or in the examples.
                         
+#### CASPT2
 
-If one wants to calculate CASPT2 afterwards, one can use the `*pt2*` scripts. These use a input file in `input` called `pt2.inp`, `pt2.json`, or `pt2.input` for MOLPRO, BAGEL and MOLCAS respectively. These do not normally require an input wavefunction, and they run in the original `CALCULATIONS` directory.
+Similar to the way one can do this in `MOLPRO`, one can perform a CASPT2 calculation after the CASSCF calculation. The main points are:
+
+- The file name should be `pt2.json` or similar
+- The file should load the `cas.ref.archive` file (one should use the default `"continue_geom" : true` keyphrase)
+                        
+### Other Codes
+
+Other codes exist, and I eventually want to get around to writing something for all of the codes I use (TURBOMOLE, ORCA, GAUSSIAN, Q-CHEM).
+
+
+
 
 Afterwards, the scripts MOLPRO_liic_reader.sh and BAGEL_liic_reader.sh will read the liics and output as a space separated energy file, which can be plotted with
 
