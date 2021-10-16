@@ -18,6 +18,16 @@ and the overall workflow is thus:
 6) Run the `XXX_liic.sh` script, where `XXX` is the program to be used.
 
 -----
+## Theory
+
+Interpolating in cartesian coordinates can often lead to nonsense coordinates. Bonds drastically shortening and lengthening, atoms moving through other atoms, etc. A simple way to get around this is to simply interpolate in a set of internal coordinates.
+
+In essence, we are putting in our knowledge of chemical systems. Bonds do lengthen and shorten in chemical dynamics, but not not much. Atoms don't generally move through eachother, etc.
+
+In chemical theory, we always want to check that our electronic structure methods give reasonable results for the critical points of our system - minima, crossing points, transition states - but we also want to check that the regions in between these regions are described well.
+
+These linear interpolations provide pseudo-reaction pathways to follow, and check the potential energy descriptions of the systems we are calculating.
+
 
 ## 1 - Creation
 
@@ -123,15 +133,15 @@ The input does generally have to be slightly altered to perform the calculations
 
 ### MOLPRO
 
-Run using the script `MOLPRO_liic.sh`, and can be read using `MOLPRO_liic_
+Run using the script `MOLPRO_liic.sh`, and can be read using `MOLPRO_liic_`
 
 `input` should contain  
 - An input file, normally called `molpro.inp`
   - This should contain all the details for calculations to be performed, should have a `file,2,liic.wfu` line, and a `geometry=geom` line
   - This file will be the main input file, and will be altered to use the correct geometry and wavefunction
   - The calculation will be performed locally, so all of the permanent files are in the calculation directory
-- An input wavefunction with the name `start.wfu`
-  - This should be a good initial wavefunction for the first geometry to be calculated.
+- *Optional*An input wavefunction with the name `start.wfu`
+  - This should be a good initial wavefunction for the first geometry to be calculated - this is crucial for CASSCF.
   - This will be copied and propagated across the LIIC. The intermediate file will be in the parent directory and called `rolling.wfu`
 - *Optional* a CASPT2/MRCI input file, normally called `pt2.inp`
   - This should contain all the details for a CASPT2/MRCI calculation, and will load the wavefunction from the wavefunction of the CASSCF calculation
@@ -145,13 +155,13 @@ This is generally preferable over performing CASPT2 in the CASSCF calculation, a
 ### MOLCAS
 
 `input` should contain  
-- an input file, normally called `molcas.input`
+- An input file, normally called `molcas.input`
   - The `RASSCF` section should have the `lumorb` keyword to load the old orbitals.
   - If Kaufmann functions are not required, then one should define the geometry/basis in `GATEWAY`, defining the geometry from the file `geom`.
   - for Kaufmann functions, you should use the `MOLCAS_liic_Kaufmann.sh` script, and define the basis set as seen in the example. This will perform an cation calculation using a file called `ion.input`, and centre the Kaufmann functions on a dummy atom `X` the centre of charge.
-- an input wavefunction with the name `start.RasOrb`
-  - This should be a good initial wavefunction for the start geometry
-- *Optional* a CASPT2 input fule, normally called `pt2.input` 
+- *Optional* An input wavefunction with the name `start.RasOrb`
+  - This should be a good initial wavefunction for the start geometry - this is crucial for CASSCF.
+- *Optional* A CASPT2 input fule, normally called `pt2.input` 
   - This should contain all of the details for the `&CASPT2` module in `MOLCAS` - it will be concatenated onto the original input file.
 
 #### CASPT2
@@ -169,9 +179,9 @@ Similar to the way one can do this in `MOLPRO`, one can perform a CASPT2 calcula
   - This should have the loading of the basis set, the `"angstrom" : true` keyphrase, and no geometry defined, just the word `pointer` (the script will look for this, and this will be fixed soon...)
   - The file should load a reference file called `prev.ref.archive` (or similar, making sure to use the `"continue_geom" : false` keyphrase) and save to one called `cas.ref.archive`
   - It is preferable to print the orbitals to a molden file for analysis of the wavefunction over the coordinate
-- an input wavefunction with the name `start.ref`
-  - This should be a good initial wavefunction for the start geometry
-- *Optional* a CASPT2 input fule, normally called `pt2.json` 
+- *Optional* An input wavefunction with the name `start.ref`
+  - This should be a good initial wavefunction for the start geometry - this is crucial for CASSCF.
+- *Optional* A CASPT2 input fule, normally called `pt2.json` 
   - This should load the wavefunction/geometries in `cas.ref.archive` - seem more details below or in the examples.
                         
 #### CASPT2
@@ -186,11 +196,38 @@ Similar to the way one can do this in `MOLPRO`, one can perform a CASPT2 calcula
 Other codes exist, and I eventually want to get around to writing something for all of the codes I use (TURBOMOLE, ORCA, GAUSSIAN, Q-CHEM).
 
 
+## 3 - Plotting
 
+After the calculation, we need to retrieve the energies of the individual calculations, and visualise them.
 
-Afterwards, the scripts MOLPRO_liic_reader.sh and BAGEL_liic_reader.sh will read the liics and output as a space separated energy file, which can be plotted with
+### Energy retrieval
 
+For each interface, a script has been provided which will find and retrieve the energies from the calculations. It will generally put them into a file called `energies` as a space-separated variable file.
+
+Each of the columns represents the nth adiabatic energy of the system, and each row respresents a geometry.
+
+For all of the CASPT2 interfaces, a separate script is provided to retrieve the pt2 energies into the file `pt2energies`.
+
+### Plotting
+
+There are also plotting scripts `plot.py` and `plotcomp.py`, which use `numpy` and `matplotlib`. These allow quick visualisation and saving of the figures.
+
+These are called by using 
 ```
 ./plot.py energies
 ```
-.
+If the file `distances` exists in the directory, the script will display the interpolation with the distance (either mass-weighted or not) on the x-axis.
+
+If one has calculations of differing multiplicities, one can use (for 5 singlets (labelled 'S') and 4 triplets (labelled 'T'))
+```
+./plot.py 5 4 S T energies
+```
+This can of course be generalised to any number of multiplicities or symmetries.
+
+If one wants to compare the energies of two differing methods by plotting on the same axes, one can use
+```
+./plotcomp.py energies1 energies2
+```
+If the files `distances` and `distances2` exists, each pathway will be plotted with each of the respective distances as the x axis. If only `distances` exists, it will plot both on the same distance x axis.
+
+
