@@ -131,6 +131,7 @@ parent_directory  - liic          # you provide these using the previous section
 
 The input does generally have to be slightly altered to perform the calculations:
 
+---
 ### MOLPRO
 
 Run using the script `MOLPRO_liic.sh`, and can be read using `MOLPRO_liic_`
@@ -146,12 +147,13 @@ Run using the script `MOLPRO_liic.sh`, and can be read using `MOLPRO_liic_`
 - *Optional* a CASPT2/MRCI input file, normally called `pt2.inp`
   - This should contain all the details for a CASPT2/MRCI calculation, and will load the wavefunction from the wavefunction of the CASSCF calculation
 
-#### PT2
+#### CASPT2
 
 If one wants to perform CASPT2 after the LIIC is finished, one can use the `MOLPRO_LIIC_pt2.sh` script. This will copy a new file into the `CALCULATIONS/liic_X` trajectory, and then run a CASPT2 calculation from the wavefunction of the CASSCF calculation.
 
 This is generally preferable over performing CASPT2 in the CASSCF calculation, as only a converged CASSCF calculation is needed to propagate the wavefunctions, not a full CASPT2 one. This allows the 'trivial parallelisation' of the calculation with a simple altering of the script, or a downsampling of the LIIC by only performing a few calculations.
 
+---
 ### MOLCAS
 
 `input` should contain  
@@ -172,6 +174,7 @@ Similar to the way one can do this in `MOLPRO`, one can perform a CASPT2 calcula
 - The script will run the calculations in a `liic_X/pt2` subdirectory, to ensure the wavefunctions are kept for analysis
 - The file will be concatenated with the initial calculation to rerun the CASSCF. This is slower than in MOLPRO or BAGEL, but I am unaware of any workaround. This shouldn't be a huge slowdown, as the wavefunction should be already converged (and will be loaded from the `molcas.RasOrb` file of the old calculation.
 
+---
 ### BAGEL
 
 `input` should contain  
@@ -190,7 +193,8 @@ Similar to the way one can do this in `MOLPRO`, one can perform a CASPT2 calcula
 
 - The file name should be `pt2.json` or similar
 - The file should load the `cas.ref.archive` file (one should use the default `"continue_geom" : true` keyphrase)
-                        
+   
+---
 ### Other Codes
 
 Other codes exist, and I eventually want to get around to writing something for all of the codes I use (TURBOMOLE, ORCA, GAUSSIAN, Q-CHEM).
