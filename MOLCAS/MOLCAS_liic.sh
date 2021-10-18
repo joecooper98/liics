@@ -19,8 +19,6 @@ input_directory="${cwd}/input"
 
 input_file=molcas.input
 
-ion_input_file=ion.input
-
 input_rasorb=start.RasOrb
 
 pathway_directory="${cwd}/liic"
@@ -40,21 +38,11 @@ do
 	mkdir ${cwd}/CALCULATIONS/liic_$i
 	cd ${cwd}/CALCULATIONS/liic_$i
 	cp ${input_directory}/${input_file} molcas.input
-	cp ${input_directory}/${ion_input_file} ion.input
 	geo_iter="${pathway_name}_$i.xyz"
 	cp ${pathway_directory}/${geo_iter} geom
     cp ${cwd}/${rasorb_rolling} $rasorb_name
     rm -f INPORB
     ln -s $rasorb_name INPORB
-    nohup pymolcas -f -b1 $ion_input_file 1>nohup.out 2>nohup.err
-    x_loc=`grep -A1 'Center of Charge' ion.log | tail -n1 | awk '{print "    ",$2, "    ",  $4, "    ", $6, "    "}'`
-    sed -i "s/X.*\/Angstrom/X $x_loc \/Angstrom/g" molcas.input	
-    for j in $(seq 1 $((`wc -l geom | cut -d ' ' -f1`-2)) )
-    do
-            atom=`head -n$((j+2)) geom | tail -n1 | awk '{print $1}'`
-            loc=`head -n$((j+2)) geom | tail -n1 | awk '{print "    ",$2,"    ",$3, "    ",$4, "    "}'`
-            sed -i "s/$atom$j.*\/Angstrom/$atom$j $loc \/Angstrom/g" molcas.input
-    done
 	nohup pymolcas -f -b 1 $input_file 1>nohup.inp 2>nohup.err
     cp molcas.RasOrb ${cwd}/${rasorb_rolling}
 done
