@@ -45,6 +45,14 @@ do
     cp ${cwd}/${JobIph_rolling} $JobIph_name
     rm -f JOBOLD
     ln -s $JobIph_name JOBOLD
+    x_loc=`$input_directory/centre_of_mass.py geom`
+    sed -i "s/X.*\/Angstrom/X $x_loc \/Angstrom/g" molcas.input	
+    for j in $(seq 1 $((`wc -l geom | cut -d ' ' -f1`-2)) )
+    do
+            atom=`head -n$((j+2)) geom | tail -n1 | awk '{print $1}'`
+            loc=`head -n$((j+2)) geom | tail -n1 | awk '{print "    ",$2,"    ",$3, "    ",$4, "    "}'`
+            sed -i "s/$atom$j.*\/Angstrom/$atom$j $loc \/Angstrom/g" molcas.input
+    done
 	nohup pymolcas -f -b 1 $input_file 1>nohup.inp 2>nohup.err
     cp molcas.JobIph ${cwd}/${JobIph_rolling}
 done
