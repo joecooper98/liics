@@ -123,7 +123,7 @@ for i in range(np.shape(data_2)[1]):
 ax.set_ylabel("Energy / eV")
 ax.set_xlabel(lab)
 ax.legend(ncol=4, loc="upper right",prop={'size': 8})
-ax.set_xlim([0,max(x[-1],x2[-1])])
+ax.set_xlim([min(x[0],x2[0]),max(x[-1],x2[-1])])
 ax.set_title(title)
 plt.savefig(filename+".png",dpi=1000)
 plt.show()
