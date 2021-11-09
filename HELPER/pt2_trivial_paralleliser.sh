@@ -2,9 +2,12 @@
 
 largest_geoms_number=100
 sample_rate=2
-points_per_run=3
+number_of_parallel_procs=7
+
 
 number_of_points=$((largest_geoms_number/sample_rate))
+points_per_run=$((number_of_points/number_of_parallel_procs +1))
+
 
 number_of_iterations=$((number_of_points/points_per_run)) 
 
