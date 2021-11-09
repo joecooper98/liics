@@ -2,7 +2,7 @@
 
 largest_geoms_number=100
 sample_rate=2
-number_of_parallel_procs=7
+number_of_parallel_procs=16
 
 
 number_of_points=$((largest_geoms_number/sample_rate))
@@ -20,7 +20,7 @@ do
         then
                 f=$largest_geoms_number
         fi
-        sed  "s/for.*/for i in {$s..$f..$sample_rate}/" MOLCAS_liic_pt2.sh
-  #      ./MOLCAS_liic_pt2.sh &
+        sed -i  "s/for.*/for i in {$s..$f..$sample_rate}/" MOLCAS_liic_pt2.sh
+        ./MOLCAS_liic_pt2.sh &
 done
 
