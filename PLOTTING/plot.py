@@ -96,6 +96,7 @@ for i in range(np.shape(data)[1]):
 
 ax.set_ylabel("Energy / eV")
 ax.set_xlabel(lab)
+ax.tick_params(direction='in', bottom=True,top=True,left=True,right=True)
 ax.legend(ncol=4, loc="upper right",prop={'size': 8})
 ax.set_xlim([x[0],x[-1]])
 ax.set_title(title)
