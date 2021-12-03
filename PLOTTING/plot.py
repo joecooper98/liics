@@ -61,7 +61,7 @@ if data[0,1] > -10:
     print("Looks like this is excitation energy based data! I will normalise the ground state, and then plot the excited states!")
     data[:,0] -= data[0,0]
     data[:,0] *= 27.2114
-    for i in range(np.size(data)[1]-1):
+    for i in range(np.shape(data)[1]-1):
         data[:,i+1] += data[:,0]
 else:
     print("Looks like this is absolute energy based data! I will normalise all the data, and plot all at once")
