@@ -107,7 +107,7 @@ elif os.path.isfile('distances'):
         lab='Distance / $\AA$ amu'
 else:
     x=np.arange(np.shape(data)[0])
-    x2=x
+    x2=np.arange(np.shape(data_2)[0])
     lab='Pathway'
     print("Using standard indices for coordinate. Use LIIC_DISTANCE.py for distances")
 
@@ -115,16 +115,19 @@ else:
 fig, ax = plt.subplots(figsize=(5,5))
 
 for i in range(np.shape(data)[1]):
-    ax.plot(x, data[:,i], linestyle = mult(i)[0], label=mlabel_1+mult(i)[1]+str(i - mult(i)[2] ), color='#332288')
+    ax.plot(x, data[:,i], linestyle = mult(i)[0],color='#332288') 
 
 for i in range(np.shape(data_2)[1]):
-    ax.plot(x2, data_2[:,i], linestyle = mult(i)[0], label=mlabel_2+mult(i)[1]+str(i - mult(i)[2] ), color='#88ccee')
+    ax.plot(x2, data_2[:,i], linestyle = mult(i)[0],color='#88ccee') 
+
+ax.plot(min([min(x),min(x2)])-1,min([np.min(data),np.min(data_2)]),label=mlabel_1,color='#332288') 
+ax.plot(min([min(x),min(x2)])-1,min([np.min(data),np.min(data_2)]),label=mlabel_2,color='#88ccee') 
 
 ax.set_ylabel("Energy / eV")
 ax.set_xlabel(lab)
 ax.tick_params(direction='in', bottom=True,top=True,left=True,right=True)
 ax.legend(ncol=4, loc="upper right",prop={'size': 8})
-ax.set_xlim([min(x[0],x2[0]),max(x[-1],x2[-1])])
+ax.set_xlim([min(min(x),min(x2)),max(max(x),max(x2))])
 ax.set_title(title)
 plt.savefig(filename+".png",dpi=1000)
 plt.show()
