@@ -120,6 +120,8 @@ for i in range(np.shape(data)[1]):
 for i in range(np.shape(data_2)[1]):
     ax.plot(x2, data_2[:,i], linestyle = mult(i)[0],color='#88ccee') 
 
+
+
 ax.plot(min([min(x),min(x2)])-1,min([np.min(data),np.min(data_2)]),label=mlabel_1,color='#332288') 
 ax.plot(min([min(x),min(x2)])-1,min([np.min(data),np.min(data_2)]),label=mlabel_2,color='#88ccee') 
 
@@ -129,5 +131,5 @@ ax.tick_params(direction='in', bottom=True,top=True,left=True,right=True)
 ax.legend(ncol=4, loc="upper right",prop={'size': 8})
 ax.set_xlim([min(min(x),min(x2)),max(max(x),max(x2))])
 ax.set_title(title)
-plt.savefig(filename+".png",dpi=1000)
+plt.savefig(filename+"vs"+filename2+".png",dpi=1000)
 plt.show()
